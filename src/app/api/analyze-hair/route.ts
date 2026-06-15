@@ -40,7 +40,7 @@ Output Format: คืนค่ามาใน JSON ที่มี field "genera
     const base64Data = imageBase64.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: [
         {
           role: 'user',
