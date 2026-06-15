@@ -3,6 +3,8 @@ import { redirect } from "next/navigation"
 import { Navbar } from "@/components/layout/Navbar"
 import DashboardTabs from "@/components/dashboard/DashboardTabs"
 
+export const dynamic = "force-dynamic"
+
 export default async function DashboardPage() {
   const supabase = await createClient()
 
