@@ -1,138 +1,61 @@
-"use client";
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { Navbar } from "@/components/layout/Navbar"
+import DashboardTabs from "@/components/dashboard/DashboardTabs"
 
-import { useState, useCallback } from "react";
-import { X, Scissors, Save, Image as ImageIcon } from "lucide-react";
-import { toast } from "sonner";
-import ReactMarkdown from "react-markdown";
+export default async function DashboardPage() {
+  const supabase = await createClient()
 
-export default function Home() {
-  const [lessonImageFile, setLessonImageFile] = useState<File | null>(null);
-  const [lessonMarkdown, setLessonMarkdown] = useState<string>("");
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const handleLessonImageDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type.startsWith("image/")) {
-      setLessonImageFile(droppedFile);
-    } else {
-      toast.error("Please drop a valid image file.");
-    }
-  }, []);
+  if (!user) {
+    redirect("/login")
+  }
+
+  // Fetch role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  const role = profile?.role || "pending"
+
+  if (role === "pending") {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-neutral-200 text-center max-w-md w-full">
+          <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h2 className="text-xl font-bold mb-2">Awaiting Approval</h2>
+          <p className="text-neutral-500 mb-6">Your account is pending administrator approval. Please check back later.</p>
+          <form action={async () => {
+            "use server"
+            const sb = await createClient()
+            await sb.auth.signOut()
+            redirect("/login")
+          }}>
+            <button type="submit" className="text-sm font-medium text-black hover:underline">
+              Log out
+            </button>
+          </form>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 pb-20">
-      {/* Header */}
-      <header className="bg-white border-b border-neutral-200 sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-black text-white p-2 rounded-lg">
-              <Scissors className="w-5 h-5" />
-            </div>
-            <h1 className="font-semibold text-lg tracking-tight">Hair Master Lesson Editor</h1>
-          </div>
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Navbar role={role} />
+      <main className="flex-1 w-full max-w-6xl mx-auto p-4 md:p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Workspace</h1>
+          <p className="text-muted-foreground">Manage your lessons, color formulas, and AI generations.</p>
         </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 mt-8">
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="grid md:grid-cols-2 gap-6">
-            
-            {/* Form Input Side */}
-            <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Create Lesson</h2>
-                <p className="text-neutral-500 text-sm">Paste the final results from your Gemini Gem here to create a beautifully formatted cheat sheet.</p>
-              </div>
-
-              {/* Lesson Image Upload */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">Hairstyle Reference Image</label>
-                {!lessonImageFile ? (
-                  <div
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={handleLessonImageDrop}
-                    className="border-2 border-dashed border-neutral-300 rounded-xl p-8 flex flex-col items-center justify-center bg-neutral-50 hover:bg-neutral-100 transition-colors cursor-pointer"
-                    onClick={() => document.getElementById("lesson-file-upload")?.click()}
-                  >
-                    <ImageIcon className="w-8 h-8 text-neutral-400 mb-2" />
-                    <p className="text-sm font-medium text-neutral-700">Upload Image</p>
-                    <input
-                      id="lesson-file-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) setLessonImageFile(file);
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="relative rounded-xl overflow-hidden bg-neutral-100 aspect-[4/3] flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={URL.createObjectURL(lessonImageFile)} alt="Lesson Preview" className="object-cover w-full h-full" />
-                    <button
-                      onClick={() => setLessonImageFile(null)}
-                      className="absolute top-3 right-3 bg-black/50 hover:bg-black text-white p-1.5 rounded-full backdrop-blur-sm transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Markdown Input */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2 flex justify-between items-center">
-                  <span>Lesson Content (Markdown)</span>
-                </label>
-                <textarea
-                  value={lessonMarkdown}
-                  onChange={(e) => setLessonMarkdown(e.target.value)}
-                  placeholder="Paste the step-by-step markdown response from your Gemini Gem here..."
-                  className="w-full h-[350px] p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all resize-y font-mono"
-                ></textarea>
-              </div>
-            </div>
-
-            {/* Live Preview Side */}
-            <div className="bg-neutral-900 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[calc(100vh-140px)] sticky top-[88px]">
-              <div className="p-4 bg-black/50 border-b border-white/10 flex justify-between items-center backdrop-blur-md">
-                <h3 className="text-white font-medium flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Live Lesson Preview
-                </h3>
-                <button className="text-white/60 hover:text-white transition-colors" onClick={() => window.print()}>
-                  <Save className="w-4 h-4" />
-                </button>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white" id="lesson-preview">
-                {lessonImageFile && (
-                  <div className="mb-8 rounded-2xl overflow-hidden shadow-lg border border-neutral-100 max-w-sm mx-auto">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={URL.createObjectURL(lessonImageFile)} alt="Final Hairstyle" className="w-full h-auto" />
-                  </div>
-                )}
-                
-                {lessonMarkdown ? (
-                  <div className="prose prose-neutral max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-blue-600 prose-img:rounded-xl">
-                    <ReactMarkdown>{lessonMarkdown}</ReactMarkdown>
-                  </div>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-neutral-400 space-y-4">
-                    <div className="w-16 h-16 rounded-full border-2 border-dashed border-neutral-200 flex items-center justify-center">
-                      <span className="text-2xl">📝</span>
-                    </div>
-                    <p>Your beautiful lesson will appear here.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </div>
+        
+        <DashboardTabs role={role} />
       </main>
     </div>
-  );
+  )
 }

@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { WorkspaceProvider } from "@/components/workspace-provider";
+import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const mono = JetBrains_Mono({
   subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
-  title: "Hair Master Cheat Sheet Generator",
-  description: "Generate professional hairstyle execution guides with AI.",
+  title: "HairMaster Pro Workspace",
+  description: "Knowledge Base and AI Assistant for Stylists",
 };
 
 export default function RootLayout({
@@ -24,13 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster />
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${mono.variable} antialiased`}
+      >
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <WorkspaceProvider>
+            {children}
+            <Toaster position="bottom-right" richColors />
+          </WorkspaceProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
