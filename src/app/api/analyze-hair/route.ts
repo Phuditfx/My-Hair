@@ -84,6 +84,8 @@ const responseSchema: Schema = {
   ]
 };
 
+export const maxDuration = 60; // Increase Vercel timeout for slow LLM responses
+
 export async function POST(req: Request) {
   try {
     const { imageBase64, isLeftHanded } = await req.json();

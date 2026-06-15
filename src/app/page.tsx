@@ -67,29 +67,53 @@ export default function HairCheatSheetPage() {
     setIsLoading(true);
     
     try {
-      // Convert file to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = async () => {
-        const base64data = reader.result;
-        
-        const response = await fetch('/api/analyze-hair', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageBase64: base64data, isLeftHanded }),
-        });
+      // Compress image to avoid Vercel 4.5MB limit
+      const img = new window.Image();
+      img.src = URL.createObjectURL(file);
+      await new Promise((resolve) => (img.onload = resolve));
 
-        if (!response.ok) {
-          throw new Error('Failed to analyze image');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
         }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+      }
 
-        const data = await response.json();
-        setResultData(data);
-        toast.success("Cheat Sheet generated successfully!");
-      };
-    } catch (error) {
+      canvas.width = width;
+      canvas.height = height;
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      const base64data = canvas.toDataURL("image/jpeg", 0.8);
+      
+      const response = await fetch('/api/analyze-hair', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64data, isLeftHanded }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to analyze image');
+      }
+
+      const data = await response.json();
+      setResultData(data);
+      toast.success("Cheat Sheet generated successfully!");
+    } catch (error: any) {
       console.error(error);
-      toast.error("Failed to generate cheat sheet. Please try again.");
+      toast.error(error.message || "Failed to generate cheat sheet. Please try again.");
     } finally {
       setIsLoading(false);
     }
