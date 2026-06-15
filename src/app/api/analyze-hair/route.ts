@@ -116,7 +116,7 @@ ${isLeftHanded ? 'THE USER IS A LEFT-HANDED STYLIST. ADJUST ALL INSTRUCTIONS FOR
     const base64Data = imageBase64.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-pro',
+      model: 'gemini-2.5-flash',
       contents: [
         {
           role: 'user',
