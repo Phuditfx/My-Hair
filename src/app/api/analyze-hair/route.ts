@@ -3,7 +3,13 @@ import { GoogleGenAI, Type, Schema } from '@google/genai';
 import { supabase } from '@/lib/supabase';
 
 // Initialize the Google Gen AI SDK
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const apiKey = process.env.GEMINI_API_KEY;
+
+if (!apiKey) {
+  console.warn("GEMINI_API_KEY is not defined in the environment variables.");
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey || 'missing-key' });
 
 const responseSchema: Schema = {
   type: Type.OBJECT,
