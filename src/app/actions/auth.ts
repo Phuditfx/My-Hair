@@ -37,7 +37,11 @@ export async function loginWithEmailOnly(prevState: any, formData: FormData) {
     })
     
     if (signUpError) {
-      return { error: signUpError.message }
+      let errorMessage = signUpError.message;
+      if (!errorMessage || errorMessage === "{}" || typeof errorMessage === "object") {
+        errorMessage = JSON.stringify(signUpError);
+      }
+      return { error: `SignUp Error: ${errorMessage} | SignIn Error: ${signInError.message}` }
     }
     
     user = signUpData?.user
