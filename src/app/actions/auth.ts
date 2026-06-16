@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 
 const DUMMY_PASSWORD = "EmailOnlyLogin123!"
 
-export async function loginWithEmailOnly(formData: FormData) {
+export async function loginWithEmailOnly(prevState: any, formData: FormData) {
   const email = formData.get("email") as string
   if (!email) {
     return { error: "Email is required" }
@@ -19,12 +19,15 @@ export async function loginWithEmailOnly(formData: FormData) {
 
   // Try to sign in first
   let user = null
+  let session = null
+  
   const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password: DUMMY_PASSWORD,
   })
 
   user = signInData?.user
+  session = signInData?.session
 
   // If sign in fails, try to sign up
   if (signInError) {
@@ -38,6 +41,13 @@ export async function loginWithEmailOnly(formData: FormData) {
     }
     
     user = signUpData?.user
+    session = signUpData?.session
+  }
+
+  // If we got a user but NO session, it means Confirm Email is likely enabled in Supabase!
+  // Without a session, the user is NOT logged in, so they will get stuck in an infinite redirect loop.
+  if (user && !session) {
+    return { error: "Please disable 'Confirm Email' in Supabase Auth Settings to allow email-only login without verification." }
   }
 
   // Ensure their profile exists and role is correct
@@ -54,5 +64,6 @@ export async function loginWithEmailOnly(formData: FormData) {
     }
   }
 
-  return { success: true }
+  // With useActionState, redirecting directly from the Server Action is safe and robust!
+  redirect("/")
 }
