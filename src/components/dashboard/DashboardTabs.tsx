@@ -1,74 +1,93 @@
 "use client"
 
 import * as Tabs from "@radix-ui/react-tabs"
-import { BookOpen, Palette, Sparkles, PlusCircle } from "lucide-react"
+import { BookOpen, Palette, Sparkles, PlusCircle, Users, Package } from "lucide-react"
 import { useState } from "react"
 import LessonEditor from "./LessonEditor"
 import ColorFormulaEditor from "./ColorFormulaEditor"
+import AdminPanel from "./AdminPanel"
+import BrandManager from "./BrandManager"
 
 export default function DashboardTabs({ role }: { role: string }) {
   const [activeTab, setActiveTab] = useState("lessons")
 
   return (
-    <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col gap-6">
-      <Tabs.List className="flex w-full bg-muted/50 p-1 rounded-xl overflow-x-auto">
+    <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col gap-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+      <Tabs.List className="flex w-full glass-card p-1.5 rounded-xl overflow-x-auto">
         <Tabs.Trigger 
           value="lessons" 
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all whitespace-nowrap"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
         >
           <BookOpen className="w-4 h-4" />
-          Lesson Notebooks
+          บทเรียน
         </Tabs.Trigger>
         <Tabs.Trigger 
           value="colors" 
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all whitespace-nowrap"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
         >
           <Palette className="w-4 h-4" />
-          Colorist Archive
+          สูตรสี
+        </Tabs.Trigger>
+        <Tabs.Trigger 
+          value="products" 
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+        >
+          <Package className="w-4 h-4" />
+          ผลิตภัณฑ์
         </Tabs.Trigger>
         
         {role === "admin" && (
-          <Tabs.Trigger 
-            value="ai-editor" 
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all whitespace-nowrap"
-          >
-            <Sparkles className="w-4 h-4" />
-            AI Custom Editor
-          </Tabs.Trigger>
+          <>
+            <Tabs.Trigger 
+              value="ai-editor" 
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+            >
+              <Sparkles className="w-4 h-4" />
+              สร้างเนื้อหา
+            </Tabs.Trigger>
+            <Tabs.Trigger 
+              value="admin" 
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+            >
+              <Users className="w-4 h-4" />
+              จัดการผู้ใช้
+            </Tabs.Trigger>
+          </>
         )}
       </Tabs.List>
 
       <Tabs.Content value="lessons" className="outline-none min-h-[500px]">
-        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+        <div className="glass-card rounded-2xl p-6 shadow-sm animate-fade-in">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-bold">Knowledge Base</h2>
-              <p className="text-sm text-muted-foreground mt-1">Browse and search existing haircut and styling lessons.</p>
+              <h2 className="text-xl font-bold">คลังความรู้</h2>
+              <p className="text-sm text-muted-foreground mt-1">เรียกดูและค้นหาบทเรียนเกี่ยวกับการตัดผมและจัดทรง</p>
             </div>
             {role === "admin" && (
-              <button onClick={() => setActiveTab("ai-editor")} className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2 hover:opacity-90">
-                <PlusCircle className="w-4 h-4" /> Create Lesson
+              <button onClick={() => setActiveTab("ai-editor")} className="px-4 py-2 rounded-xl text-sm font-semibold text-white flex items-center gap-2 hover:opacity-90 transition-all glow-hover" style={{ background: "var(--gradient-primary)" }}>
+                <PlusCircle className="w-4 h-4" /> สร้างบทเรียน
               </button>
             )}
           </div>
           
-          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground border-2 border-dashed border-border rounded-xl">
+          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground border-2 border-dashed border-border/50 rounded-xl">
             <BookOpen className="w-12 h-12 mb-4 opacity-20" />
-            <p>No lessons found in this workspace.</p>
+            <p className="font-medium">ยังไม่มีบทเรียนในพื้นที่นี้</p>
+            <p className="text-sm opacity-60 mt-1">เริ่มสร้างเนื้อหาใหม่เพื่อเพิ่มบทเรียน</p>
           </div>
         </div>
       </Tabs.Content>
 
       <Tabs.Content value="colors" className="outline-none min-h-[500px]">
-        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+        <div className="glass-card rounded-2xl p-6 shadow-sm animate-fade-in">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-bold">Color Formula Archive</h2>
-              <p className="text-sm text-muted-foreground mt-1">Database of color transformations and formulas.</p>
+              <h2 className="text-xl font-bold">คลังสูตรสี</h2>
+              <p className="text-sm text-muted-foreground mt-1">ฐานข้อมูลสูตรสีผมและเทคนิคการผสมสี</p>
             </div>
             {role === "admin" && (
-              <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2 hover:opacity-90">
-                <PlusCircle className="w-4 h-4" /> Add Formula
+              <button className="px-4 py-2 rounded-xl text-sm font-semibold text-white flex items-center gap-2 hover:opacity-90 transition-all glow-hover" style={{ background: "var(--gradient-primary)" }}>
+                <PlusCircle className="w-4 h-4" /> เพิ่มสูตรสี
               </button>
             )}
           </div>
@@ -78,10 +97,27 @@ export default function DashboardTabs({ role }: { role: string }) {
       </Tabs.Content>
 
       {role === "admin" && (
-        <Tabs.Content value="ai-editor" className="outline-none min-h-[500px]">
-          <LessonEditor />
-        </Tabs.Content>
+        <>
+          <Tabs.Content value="ai-editor" className="outline-none min-h-[500px]">
+            <LessonEditor />
+          </Tabs.Content>
+          <Tabs.Content value="admin" className="outline-none min-h-[500px]">
+            <div className="glass-card rounded-2xl p-6 shadow-sm animate-fade-in">
+              <h2 className="text-xl font-bold mb-1">จัดการผู้ใช้งาน</h2>
+              <p className="text-sm text-muted-foreground mb-6">อนุมัติ เปลี่ยนสถานะ หรือลบผู้ใช้งานในระบบ</p>
+              <AdminPanel />
+            </div>
+          </Tabs.Content>
+        </>
       )}
+
+      <Tabs.Content value="products" className="outline-none min-h-[500px]">
+        <div className="glass-card rounded-2xl p-6 shadow-sm animate-fade-in">
+          <h2 className="text-xl font-bold mb-1">ผลิตภัณฑ์และแบรนด์</h2>
+          <p className="text-sm text-muted-foreground mb-6">รวมแบรนด์สีผม น้ำยาดัด น้ำยายืด ที่ใช้ในร้าน</p>
+          <BrandManager role={role} />
+        </div>
+      </Tabs.Content>
     </Tabs.Root>
   )
 }

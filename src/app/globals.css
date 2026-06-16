@@ -17,73 +17,271 @@
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
 }
 
+/* ============================================
+   SALON LIGHT THEME (Default)
+   Inspired by Gemini - warm, elegant, modern
+   ============================================ */
 :root {
-  /* Default: Salon Light Theme */
-  --background: oklch(0.98 0.01 0); /* Soft cream/white */
-  --foreground: oklch(0.15 0.02 0); /* Dark elegant grey */
-  --card: oklch(1 0 0); /* White */
-  --card-foreground: oklch(0.15 0.02 0);
-  --primary: oklch(0.85 0.05 10); /* Soft Rose / Rose Gold */
-  --primary-foreground: oklch(0.15 0.02 0);
-  --muted: oklch(0.95 0.02 10); /* Light blush */
-  --muted-foreground: oklch(0.5 0.02 10);
-  --border: oklch(0.92 0.02 10);
+  --background: #f8f9fa;
+  --foreground: #1a1a2e;
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --accent: #c084fc;
+  --accent-foreground: #1a1a2e;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #1a1a2e;
   --radius: 0.75rem;
+
+  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c084fc 100%);
+  --gradient-accent: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(139, 92, 246, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
+/* ============================================
+   SALON DARK THEME
+   Gemini-style deep dark with purple/violet accents
+   ============================================ */
 .dark {
-  /* Default: Salon Dark Theme */
-  --background: oklch(0.15 0.02 0); /* Very dark brown/grey */
-  --foreground: oklch(0.95 0.02 90); /* Soft gold/cream text */
-  --card: oklch(0.20 0.02 0);
-  --card-foreground: oklch(0.95 0.02 90);
-  --primary: oklch(0.80 0.15 90); /* Gold */
-  --primary-foreground: oklch(0.10 0.02 0);
-  --muted: oklch(0.25 0.02 0);
-  --muted-foreground: oklch(0.70 0.05 90);
-  --border: oklch(0.30 0.02 0);
+  --background: #131314;
+  --foreground: #e3e3e8;
+  --card: #1e1f20;
+  --card-foreground: #e3e3e8;
+  --primary: #a78bfa;
+  --primary-foreground: #131314;
+  --muted: #282a2c;
+  --muted-foreground: #9aa0a6;
+  --border: #3c4043;
+  --accent: #c084fc;
+  --accent-foreground: #131314;
+  --destructive: #f87171;
+  --destructive-foreground: #131314;
+  --success: #4ade80;
+  --success-foreground: #131314;
+  --warning: #fbbf24;
+  --warning-foreground: #131314;
+
+  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%);
+  --gradient-accent: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(167, 139, 250, 0.05) 0%, rgba(30, 31, 32, 0) 100%);
 }
 
-/* Theme overrides for Barber Mode */
+/* ============================================
+   BARBER LIGHT THEME
+   Cool, sharp, masculine - navy & steel
+   ============================================ */
 body.theme-barber {
-  /* Barber Light Theme */
-  --background: oklch(0.98 0 0); /* Pure light gray */
-  --foreground: oklch(0.10 0 0); /* Almost black */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.10 0 0);
-  --primary: oklch(0.40 0.10 250); /* Sharp Navy Blue */
-  --primary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.92 0 0); /* Cool gray */
-  --muted-foreground: oklch(0.40 0 0);
-  --border: oklch(0.85 0 0);
-  --radius: 0.25rem; /* Sharper corners for barber */
+  --background: #f0f2f5;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --muted: #e2e8f0;
+  --muted-foreground: #475569;
+  --border: #cbd5e1;
+  --accent: #3b82f6;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #0f172a;
+  --radius: 0.5rem;
+
+  --gradient-primary: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+  --gradient-accent: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(37, 99, 235, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
-body.theme-barber.dark {
-  /* Barber Dark Theme */
-  --background: oklch(0.10 0 0); /* Deep black */
-  --foreground: oklch(0.90 0 0); /* White/light gray */
-  --card: oklch(0.15 0 0); /* Dark gray card */
-  --card-foreground: oklch(0.90 0 0);
-  --primary: oklch(0.45 0.20 20); /* Burgundy Red */
-  --primary-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.20 0 0);
-  --muted-foreground: oklch(0.65 0 0);
-  --border: oklch(0.25 0 0);
+/* ============================================
+   BARBER DARK THEME
+   Deep black with electric blue & red accents
+   ============================================ */
+body.theme-barber.dark,
+body.theme-barber :is(.dark *) {
+  --background: #0a0a0f;
+  --foreground: #e2e8f0;
+  --card: #141420;
+  --card-foreground: #e2e8f0;
+  --primary: #3b82f6;
+  --primary-foreground: #0a0a0f;
+  --muted: #1e1e2e;
+  --muted-foreground: #94a3b8;
+  --border: #2d2d3f;
+  --accent: #60a5fa;
+  --accent-foreground: #0a0a0f;
+  --destructive: #f87171;
+  --destructive-foreground: #0a0a0f;
+  --success: #4ade80;
+  --success-foreground: #0a0a0f;
+  --warning: #fbbf24;
+  --warning-foreground: #0a0a0f;
+
+  --gradient-primary: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #60a5fa 100%);
+  --gradient-accent: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(59, 130, 246, 0.05) 0%, rgba(10, 10, 15, 0) 100%);
 }
 
+/* ============================================
+   BASE STYLES & ANIMATIONS
+   ============================================ */
 @layer base {
   * {
     @apply border-border outline-none;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-500;
+    @apply bg-background text-foreground;
+    transition: background-color 0.4s ease, color 0.3s ease;
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
+}
+
+/* Gemini-style glass card */
+.glass-card {
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient border card */
+.gradient-border {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius);
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--gradient-primary);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Smooth animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+.animate-slide-down {
+  animation: slide-down 0.4s ease-out forwards;
+}
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+/* Stagger children animations */
+.stagger-children > * {
+  opacity: 0;
+  animation: slide-up 0.4s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+
+/* Glow effect on hover */
+.glow-hover {
+  transition: box-shadow 0.3s ease;
+}
+.glow-hover:hover {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 25%, transparent),
+              0 0 40px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* Badge styles */
+.badge-admin {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: white;
+}
+.badge-vip {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #1a1a2e;
+}
+.badge-member {
+  background: var(--success);
+  color: white;
+}
+.badge-pending {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+/* Custom scrollbar - Gemini style */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 100px;
+  opacity: 0.3;
+}
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
 }
