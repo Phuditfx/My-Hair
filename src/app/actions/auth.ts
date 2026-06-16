@@ -50,7 +50,7 @@ export async function loginWithEmailOnly(prevState: any, formData: FormData) {
     if (user) {
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, role: targetRole })
+        .upsert({ id: user.id, email: email, role: targetRole })
         
       if (profileError) {
         console.error("Profile update error:", profileError)
