@@ -54,5 +54,5 @@ export async function loginWithEmailOnly(formData: FormData) {
     }
   }
 
-  redirect("/")
+  return { success: true }
 }

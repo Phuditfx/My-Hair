@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Scissors } from "lucide-react";
 import { loginWithEmailOnly } from "@/app/actions/auth";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col justify-center items-center p-4">
@@ -34,9 +36,13 @@ export default function LoginPage() {
               if (res?.error) {
                 setError(res.error);
                 setLoading(false);
+              } else if (res?.success) {
+                router.push("/");
+                router.refresh();
               }
-            } catch (err) {
-              setError("An unexpected error occurred.");
+            } catch (err: any) {
+              console.error("Login exception:", err);
+              setError(err.message || String(err));
               setLoading(false);
             }
           }} 
