@@ -1,0 +1,17 @@
+{
+  "name": "HairMaster Pro",
+  "short_name": "HairMaster",
+  "description": "ระบบจัดการร้านทำผมสำหรับช่างมืออาชีพ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#131314",
+  "theme_color": "#131314",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

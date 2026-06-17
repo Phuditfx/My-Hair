@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { Image as ImageIcon, X, Save, Plus, Trash2, GripVertical, Crown, Eye } from "lucide-react"
+import { Image as ImageIcon, X, Save, Plus, Trash2, GripVertical, Crown, Eye, Loader2 } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { useWorkspace } from "../workspace-provider"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 interface Step {
   id: string
@@ -23,7 +25,59 @@ export default function LessonEditor() {
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [previewMode, setPreviewMode] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const { workspace } = useWorkspace()
+
+  const handleSave = async () => {
+    if (!title.trim()) {
+      toast.error("กรุณาระบุชื่อบทเรียน")
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        toast.error("กรุณาเข้าสู่ระบบก่อนบันทึก")
+        return
+      }
+
+      // Convert steps to JSON (excluding raw File objects)
+      const contentData = steps.map(s => ({
+        id: s.id,
+        title: s.title,
+        content: s.content,
+        // In a full implementation, you would upload s.imageFile to Supabase Storage
+        // and save the returned URL here.
+      }))
+
+      const { error } = await supabase.from('lessons').insert({
+        title,
+        tags,
+        is_vip: isVip,
+        content_data: contentData,
+        workspace,
+        created_by: user.id
+      })
+
+      if (error) throw error
+
+      toast.success("บันทึกบทเรียนสำเร็จ!")
+      // Reset form
+      setTitle("")
+      setTags("")
+      setSteps([{ id: crypto.randomUUID(), title: "", content: "", imageFile: null, imagePreview: null }])
+      setCoverImage(null)
+      setCoverPreview(null)
+    } catch (err: any) {
+      console.error(err)
+      toast.error("เกิดข้อผิดพลาดในการบันทึก: " + err.message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const addStep = () => {
     setSteps(prev => [...prev, {
@@ -210,11 +264,13 @@ export default function LessonEditor() {
           </div>
 
           <button 
-            className="w-full py-2.5 rounded-xl font-semibold text-white hover:opacity-90 transition-all glow-hover flex items-center justify-center gap-2"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full py-2.5 rounded-xl font-semibold text-white hover:opacity-90 transition-all glow-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Save className="w-4 h-4" />
-            บันทึกลง{workspace === 'salon' ? 'ซาลอน' : 'บาร์เบอร์'}
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {isSaving ? "กำลังบันทึก..." : `บันทึกลง${workspace === 'salon' ? 'ซาลอน' : 'บาร์เบอร์'}`}
           </button>
         </div>
       </div>

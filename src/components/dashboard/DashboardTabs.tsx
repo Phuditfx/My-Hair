@@ -12,27 +12,27 @@ export default function DashboardTabs({ role }: { role: string }) {
   const [activeTab, setActiveTab] = useState("lessons")
 
   return (
-    <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col gap-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-      <Tabs.List className="flex w-full glass-card p-1.5 rounded-xl overflow-x-auto">
+    <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col gap-6 pb-24 md:pb-0 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+      <Tabs.List className="flex w-full glass-card p-1.5 overflow-x-auto fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl rounded-b-none border-t border-border/50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:relative md:rounded-xl md:border-t-0 md:pb-1.5 md:shadow-none">
         <Tabs.Trigger 
           value="lessons" 
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+          className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 text-[10px] md:text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:text-primary md:data-[state=active]:bg-card md:data-[state=active]:text-foreground md:data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
         >
-          <BookOpen className="w-4 h-4" />
+          <BookOpen className="w-5 h-5 md:w-4 md:h-4" />
           บทเรียน
         </Tabs.Trigger>
         <Tabs.Trigger 
           value="colors" 
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+          className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 text-[10px] md:text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:text-primary md:data-[state=active]:bg-card md:data-[state=active]:text-foreground md:data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
         >
-          <Palette className="w-4 h-4" />
+          <Palette className="w-5 h-5 md:w-4 md:h-4" />
           สูตรสี
         </Tabs.Trigger>
         <Tabs.Trigger 
           value="products" 
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+          className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 text-[10px] md:text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:text-primary md:data-[state=active]:bg-card md:data-[state=active]:text-foreground md:data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
         >
-          <Package className="w-4 h-4" />
+          <Package className="w-5 h-5 md:w-4 md:h-4" />
           ผลิตภัณฑ์
         </Tabs.Trigger>
         
@@ -40,17 +40,17 @@ export default function DashboardTabs({ role }: { role: string }) {
           <>
             <Tabs.Trigger 
               value="ai-editor" 
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+              className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 text-[10px] md:text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:text-primary md:data-[state=active]:bg-card md:data-[state=active]:text-foreground md:data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
             >
-              <Sparkles className="w-4 h-4" />
-              สร้างเนื้อหา
+              <Sparkles className="w-5 h-5 md:w-4 md:h-4" />
+              เนื้อหา
             </Tabs.Trigger>
             <Tabs.Trigger 
               value="admin" 
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
+              className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 text-[10px] md:text-sm font-medium rounded-lg text-muted-foreground data-[state=active]:text-primary md:data-[state=active]:bg-card md:data-[state=active]:text-foreground md:data-[state=active]:shadow-sm transition-all duration-300 whitespace-nowrap"
             >
-              <Users className="w-4 h-4" />
-              จัดการผู้ใช้
+              <Users className="w-5 h-5 md:w-4 md:h-4" />
+              ผู้ใช้
             </Tabs.Trigger>
           </>
         )}
