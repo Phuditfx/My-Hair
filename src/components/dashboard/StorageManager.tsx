@@ -6,11 +6,13 @@ import { Trash2, Download, HardDrive, FileText, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
+import { ConfirmModal } from "../ConfirmModal"
 
 export default function StorageManager() {
   const [lessons, setLessons] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [exportingId, setExportingId] = useState<string | null>(null)
   const exportRef = useRef<HTMLDivElement>(null)
   const [exportData, setExportData] = useState<any | null>(null)
@@ -38,8 +40,6 @@ export default function StorageManager() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (!confirm("คุณแน่ใจหรือไม่ที่จะลบบทเรียนนี้? ข้อมูลจะหายไปถาวร")) return
-    
     setDeletingId(id)
     try {
       const supabase = createClient()
@@ -52,6 +52,7 @@ export default function StorageManager() {
       toast.error("เกิดข้อผิดพลาดในการลบ: " + err.message)
     } finally {
       setDeletingId(null)
+      setConfirmDeleteId(null)
     }
   }
 
@@ -98,6 +99,15 @@ export default function StorageManager() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
+      <ConfirmModal
+        isOpen={!!confirmDeleteId}
+        title="ยืนยันการลบบทเรียน"
+        message="คุณแน่ใจหรือไม่ที่จะลบบทเรียนนี้? ข้อมูลและรูปภาพทั้งหมดจะหายไปอย่างถาวร"
+        confirmText="ลบทันที"
+        onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}
+        onCancel={() => setConfirmDeleteId(null)}
+        isLoading={deletingId === confirmDeleteId}
+      />
       {/* Storage Overview */}
       <div className="glass-card rounded-2xl p-6 shadow-sm border border-border/50">
         <div className="flex items-center gap-3 mb-4">
@@ -168,7 +178,7 @@ export default function StorageManager() {
                     PDF
                   </button>
                   <button 
-                    onClick={() => handleDelete(lesson.id)}
+                    onClick={() => setConfirmDeleteId(lesson.id)}
                     disabled={deletingId === lesson.id}
                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors text-sm font-medium disabled:opacity-50"
                   >

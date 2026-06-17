@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react"
 import { fetchAllUsers, updateUserRole, deleteUser } from "@/app/actions/admin"
 import { Search, Shield, Sparkles, UserCheck, Clock, Trash2, ChevronDown, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
+import { ConfirmModal } from "../ConfirmModal"
 
 interface Profile {
   id: string
@@ -18,6 +19,7 @@ export default function AdminPanel() {
   const [search, setSearch] = useState("")
   const [isPending, startTransition] = useTransition()
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [confirmDeleteUser, setConfirmDeleteUser] = useState<{id: string, email: string} | null>(null)
 
   const loadUsers = async () => {
     setLoading(true)
@@ -48,8 +50,6 @@ export default function AdminPanel() {
   }
 
   const handleDelete = (userId: string, email: string) => {
-    if (!confirm(`คุณต้องการลบผู้ใช้ ${email} ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`)) return
-
     startTransition(async () => {
       const result = await deleteUser(userId)
       if (result.success) {
@@ -58,6 +58,7 @@ export default function AdminPanel() {
       } else {
         toast.error(result.error || "เกิดข้อผิดพลาด")
       }
+      setConfirmDeleteUser(null)
     })
   }
 
@@ -113,6 +114,16 @@ export default function AdminPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in">
+      <ConfirmModal
+        isOpen={!!confirmDeleteUser}
+        title="ยืนยันการลบผู้ใช้"
+        message={`คุณต้องการลบผู้ใช้ ${confirmDeleteUser?.email} ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`}
+        confirmText="ลบทันที"
+        onConfirm={() => confirmDeleteUser && handleDelete(confirmDeleteUser.id, confirmDeleteUser.email)}
+        onCancel={() => setConfirmDeleteUser(null)}
+        isLoading={isPending}
+      />
+
       {/* Search & Stats Bar */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
@@ -205,7 +216,7 @@ export default function AdminPanel() {
                       
                       {/* Delete */}
                       <button
-                        onClick={() => handleDelete(user.id, user.email)}
+                        onClick={() => setConfirmDeleteUser({ id: user.id, email: user.email })}
                         className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                         title="ลบผู้ใช้"
                       >

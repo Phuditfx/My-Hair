@@ -5,6 +5,7 @@ import { Plus, Trash2, Crown, ImageIcon, X, Save, Loader2, Eye, ChevronLeft, Pal
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "../workspace-provider"
 import { toast } from "sonner"
+import { ConfirmModal } from "../ConfirmModal"
 
 interface Step {
   id: string
@@ -35,6 +36,8 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
   const [savedFormulas, setSavedFormulas] = useState<SavedFormula[]>([])
   const [loadingFormulas, setLoadingFormulas] = useState(true)
   const [viewingFormula, setViewingFormula] = useState<SavedFormula | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const { workspace } = useWorkspace()
   const [steps, setSteps] = useState<Step[]>([
     { id: crypto.randomUUID(), title: "", content: "", imageFile: null, imagePreview: null }
@@ -135,7 +138,7 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
   }
 
   const handleDeleteFormula = async (formulaId: string) => {
-    if (!confirm("ต้องการลบสูตรสีนี้หรือไม่?")) return
+    setIsDeleting(true)
     try {
       const supabase = createClient()
       const { error } = await supabase.from("color_formulas").delete().eq("id", formulaId)
@@ -145,6 +148,9 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
       if (viewingFormula?.id === formulaId) setViewingFormula(null)
     } catch (err: any) {
       toast.error("ลบไม่สำเร็จ: " + err.message)
+    } finally {
+      setIsDeleting(false)
+      setConfirmDeleteId(null)
     }
   }
 
@@ -404,6 +410,16 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
   // ========== VIEW: Formula List (Default) ==========
   return (
     <div className="animate-fade-in">
+      <ConfirmModal
+        isOpen={!!confirmDeleteId}
+        title="ยืนยันการลบสูตรสี"
+        message="คุณแน่ใจหรือไม่ที่จะลบสูตรสีนี้? ข้อมูลจะหายไปอย่างถาวร"
+        confirmText="ลบทันที"
+        onConfirm={() => confirmDeleteId && handleDeleteFormula(confirmDeleteId)}
+        onCancel={() => setConfirmDeleteId(null)}
+        isLoading={isDeleting}
+      />
+
       {role === "admin" && (
         <div className="mb-6">
           <button
@@ -458,7 +474,7 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
                 </button>
                 {role === "admin" && (
                   <button
-                    onClick={() => handleDeleteFormula(formula.id)}
+                    onClick={() => setConfirmDeleteId(formula.id)}
                     className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors text-xs font-medium"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> ลบ

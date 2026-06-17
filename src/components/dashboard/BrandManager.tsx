@@ -5,6 +5,7 @@ import { Plus, Trash2, ImageIcon, X, Package, ChevronDown, ChevronUp, Save, Load
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "../workspace-provider"
 import { toast } from "sonner"
+import { ConfirmModal } from "../ConfirmModal"
 
 interface Brand {
   id: string
@@ -66,6 +67,7 @@ export default function BrandManager({ role }: { role: string }) {
   const [addingToCategoryId, setAddingToCategoryId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [confirmDeleteCatId, setConfirmDeleteCatId] = useState<string | null>(null)
   const { workspace } = useWorkspace()
 
   useEffect(() => {
@@ -167,8 +169,8 @@ export default function BrandManager({ role }: { role: string }) {
   }
 
   const removeCategory = (catId: string) => {
-    if (!confirm("คุณต้องการลบหมวดหมู่นี้ใช่หรือไม่? แบรนด์ทั้งหมดในหมวดหมู่จะถูกลบด้วย")) return
     setCategories(prev => prev.filter(c => c.id !== catId))
+    setConfirmDeleteCatId(null)
   }
 
   const addBrand = (catId: string) => {
@@ -202,6 +204,15 @@ export default function BrandManager({ role }: { role: string }) {
 
   return (
     <div className="space-y-4 animate-fade-in">
+      <ConfirmModal
+        isOpen={!!confirmDeleteCatId}
+        title="ยืนยันการลบหมวดหมู่"
+        message="คุณต้องการลบหมวดหมู่นี้ใช่หรือไม่? แบรนด์ทั้งหมดในหมวดหมู่จะถูกลบด้วย"
+        confirmText="ลบทันที"
+        onConfirm={() => confirmDeleteCatId && removeCategory(confirmDeleteCatId)}
+        onCancel={() => setConfirmDeleteCatId(null)}
+      />
+
       {/* Add Category (Admin only) */}
       {role === "admin" && (
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -258,7 +269,7 @@ export default function BrandManager({ role }: { role: string }) {
             <div className="flex items-center gap-2">
               {role === "admin" && (
                 <span
-                  onClick={e => { e.stopPropagation(); removeCategory(cat.id) }}
+                  onClick={e => { e.stopPropagation(); setConfirmDeleteCatId(cat.id) }}
                   className="p-1 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
