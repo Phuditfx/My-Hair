@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { Image as ImageIcon, X, Save, Plus, Trash2, GripVertical, Crown, Eye, Loader2 } from "lucide-react"
+import { Image as ImageIcon, X, Save, Plus, Trash2, GripVertical, Crown, Eye, Loader2, Sparkles } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { useWorkspace } from "../workspace-provider"
 import { createClient } from "@/lib/supabase/client"
@@ -15,7 +15,7 @@ interface Step {
   imagePreview: string | null
 }
 
-export default function LessonEditor() {
+export default function LessonEditor({ onBack }: { onBack?: () => void }) {
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState("")
   const [isVip, setIsVip] = useState(false)
@@ -112,11 +112,21 @@ export default function LessonEditor() {
     <div className="grid md:grid-cols-2 gap-6 animate-slide-up">
       {/* Editor Side */}
       <div className="glass-card rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-muted-foreground hover:text-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+          )}
           <div>
-            <h2 className="text-xl font-bold mb-1">สร้างบทเรียนใหม่</h2>
-            <p className="text-sm text-muted-foreground">เพิ่มเนื้อหาแบบขั้นตอน (Step-by-step)</p>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              สร้างเนื้อหาใหม่
+            </h2>
+            <p className="text-sm text-muted-foreground">ระบบจำลองการสร้างเนื้อหาสำหรับ {workspace === 'salon' ? 'ซาลอน' : 'บาร์เบอร์'}</p>
           </div>
+        </div>
           {/* VIP Toggle */}
           <button
             onClick={() => setIsVip(!isVip)}
@@ -235,14 +245,13 @@ export default function LessonEditor() {
                       />
                     </button>
                   ) : (
-                    <div className="relative rounded-lg overflow-hidden bg-muted h-32">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={step.imagePreview} alt={`ขั้นตอน ${index + 1}`} className="object-cover w-full h-full" />
+                    <div className="relative">
+                      <img src={step.imagePreview} alt={`ขั้นตอน ${index + 1}`} className="w-full max-h-64 object-contain rounded-xl border border-border/50" />
                       <button
                         onClick={() => updateStep(step.id, "imagePreview", null)}
-                        className="absolute top-1 right-1 bg-black/50 hover:bg-black text-white p-1 rounded-full"
+                        className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-red-500 rounded-lg text-white transition-colors backdrop-blur-sm"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   )}
