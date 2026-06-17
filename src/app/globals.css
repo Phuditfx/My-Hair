@@ -151,14 +151,35 @@ body.theme-barber :is(.dark *) {
   * {
     @apply border-border outline-none;
   }
+  html, body {
+    overscroll-behavior-y: none;
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
   body {
     @apply bg-background text-foreground;
     transition: background-color 0.4s ease, color 0.3s ease;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input, textarea {
+    -webkit-user-select: auto;
+    user-select: auto;
   }
   html {
     @apply font-sans;
     scroll-behavior: smooth;
   }
+}
+
+/* Safe area padding utilities */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px) !important;
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 16px) !important;
 }
 
 /* Gemini-style glass card */

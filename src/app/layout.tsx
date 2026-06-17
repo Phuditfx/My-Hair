@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_Thai, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -19,9 +19,24 @@ const mono = JetBrains_Mono({
   variable: "--font-geist-mono",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#131314",
+};
+
 export const metadata: Metadata = {
   title: "HairMaster Pro - ระบบจัดการร้านทำผม",
   description: "ระบบจัดการบทเรียน สูตรสี และผลิตภัณฑ์สำหรับช่างทำผมมืออาชีพ",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "HairMaster",
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
