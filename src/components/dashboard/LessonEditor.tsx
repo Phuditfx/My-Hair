@@ -28,6 +28,66 @@ export default function LessonEditor({ onBack }: { onBack?: () => void }) {
   const [isSaving, setIsSaving] = useState(false)
   const { workspace } = useWorkspace()
 
+  // Compress image before upload (max 800px width, 70% JPEG quality)
+  const compressImage = (file: File, maxWidth = 800, quality = 0.7): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new window.Image()
+        img.onload = () => {
+          const canvas = document.createElement("canvas")
+          let width = img.width
+          let height = img.height
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width)
+            width = maxWidth
+          }
+
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext("2d")!
+          ctx.drawImage(img, 0, 0, width, height)
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob)
+              else reject(new Error("Failed to compress image"))
+            },
+            "image/jpeg",
+            quality
+          )
+        }
+        img.onerror = reject
+        img.src = e.target?.result as string
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const uploadImage = async (supabase: any, file: File | Blob, folder: string): Promise<string | null> => {
+    try {
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`
+      const filePath = `${workspace}/${folder}/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from("lessons")
+        .upload(filePath, file, { contentType: "image/jpeg" })
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from("lessons")
+        .getPublicUrl(filePath)
+
+      return data.publicUrl
+    } catch (err) {
+      console.error("Upload error:", err)
+      return null
+    }
+  }
+
   const handleSave = async () => {
     if (!title.trim()) {
       toast.error("กรุณาระบุชื่อบทเรียน")
@@ -44,35 +104,54 @@ export default function LessonEditor({ onBack }: { onBack?: () => void }) {
         return
       }
 
-      // Convert steps to JSON (excluding raw File objects)
-      const contentData = steps.map(s => ({
-        id: s.id,
-        title: s.title,
-        content: s.content,
-        // In a full implementation, you would upload s.imageFile to Supabase Storage
-        // and save the returned URL here.
+      toast.loading("กำลังบีบอัดและอัปโหลดรูปภาพ...", { id: "save-lesson" })
+
+      // Upload cover image
+      let coverUrl: string | null = null
+      if (coverImage) {
+        const compressedCover = await compressImage(coverImage)
+        coverUrl = await uploadImage(supabase, compressedCover, "covers")
+      }
+
+      // Upload step images and build content data
+      const contentData = await Promise.all(steps.map(async (s) => {
+        let imageUrl: string | null = null
+        if (s.imageFile) {
+          const compressedImg = await compressImage(s.imageFile)
+          imageUrl = await uploadImage(supabase, compressedImg, "steps")
+        }
+        return {
+          id: s.id,
+          title: s.title,
+          content: s.content,
+          imagePreview: imageUrl, // Save the URL so the viewer can display it
+        }
       }))
+
+      toast.loading("กำลังบันทึกบทเรียน...", { id: "save-lesson" })
 
       const { error } = await supabase.from('lessons').insert({
         title,
         tags,
         is_vip: isVip,
         content_data: contentData,
+        cover_image_url: coverUrl,
         workspace,
       })
 
       if (error) throw error
 
-      toast.success("บันทึกบทเรียนสำเร็จ!")
+      toast.success("บันทึกบทเรียนสำเร็จ! 🎉", { id: "save-lesson" })
       // Reset form
       setTitle("")
       setTags("")
+      setIsVip(false)
       setSteps([{ id: crypto.randomUUID(), title: "", content: "", imageFile: null, imagePreview: null }])
       setCoverImage(null)
       setCoverPreview(null)
     } catch (err: any) {
       console.error(err)
-      toast.error("เกิดข้อผิดพลาดในการบันทึก: " + err.message)
+      toast.error("เกิดข้อผิดพลาดในการบันทึก: " + err.message, { id: "save-lesson" })
     } finally {
       setIsSaving(false)
     }
