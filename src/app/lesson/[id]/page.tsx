@@ -12,7 +12,11 @@ export default async function LessonPage({ params }: { params: { id: string } })
     .eq("id", params.id)
     .single()
 
-  if (error || !lesson) {
+  if (error) {
+    return <div className="p-8 text-center text-red-500">เกิดข้อผิดพลาดในการดึงข้อมูล: {error.message}</div>
+  }
+
+  if (!lesson) {
     notFound()
   }
 
