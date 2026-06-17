@@ -3,6 +3,7 @@
 import * as Tabs from "@radix-ui/react-tabs"
 import { BookOpen, Palette, Sparkles, PlusCircle, Users, Package, HardDrive, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "../workspace-provider"
 import LessonEditor from "./LessonEditor"
@@ -122,25 +123,30 @@ export default function DashboardTabs({ role }: { role: string }) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {lessons.map(lesson => (
-                <div key={lesson.id} className="glass-card rounded-xl p-5 hover:border-primary/50 transition-colors cursor-pointer group">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{lesson.title}</h3>
-                    {lesson.is_vip && (
-                      <span className="px-2 py-1 text-xs font-bold rounded-md bg-amber-500/10 text-amber-500">VIP</span>
-                    )}
+                <Link href={`/lesson/${lesson.id}`} key={lesson.id} className="block">
+                  <div className="glass-card rounded-xl p-5 hover:border-primary/50 transition-colors cursor-pointer group h-full">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-2">{lesson.title}</h3>
+                      {lesson.is_vip && (
+                        <span className="px-2 py-1 text-xs font-bold rounded-md bg-amber-500/10 text-amber-500 shrink-0 ml-2">VIP</span>
+                      )}
+                    </div>
+                    <div className="flex gap-2 mb-4 flex-wrap">
+                      {lesson.tags?.split(',').map((tag: string, i: number) => {
+                        if (!tag.trim()) return null
+                        return (
+                          <span key={i} className="px-2 py-1 bg-secondary rounded-md text-xs text-muted-foreground">
+                            {tag.trim()}
+                          </span>
+                        )
+                      })}
+                    </div>
+                    <div className="text-xs text-muted-foreground flex justify-between items-center mt-auto">
+                      <span>{new Date(lesson.created_at).toLocaleDateString('th-TH')}</span>
+                      <span>{lesson.content_data?.length || 0} ขั้นตอน</span>
+                    </div>
                   </div>
-                  <div className="flex gap-2 mb-4 flex-wrap">
-                    {lesson.tags?.split(',').map((tag: string, i: number) => (
-                      <span key={i} className="px-2 py-1 bg-secondary rounded-md text-xs text-muted-foreground">
-                        {tag.trim()}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-xs text-muted-foreground flex justify-between items-center">
-                    <span>{new Date(lesson.created_at).toLocaleDateString('th-TH')}</span>
-                    <span>{lesson.content_data?.length || 0} ขั้นตอน</span>
-                  </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

@@ -1,7 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Trash2, ImageIcon, X, Package, ChevronDown, ChevronUp } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Plus, Trash2, ImageIcon, X, Package, ChevronDown, ChevronUp, Save, Loader2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "../workspace-provider"
+import { toast } from "sonner"
 
 interface Brand {
   id: string
@@ -56,11 +59,97 @@ const DEFAULT_CATEGORIES: Category[] = [
 ]
 
 export default function BrandManager({ role }: { role: string }) {
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES)
+  const [categories, setCategories] = useState<Category[]>([])
   const [newCategoryName, setNewCategoryName] = useState("")
   const [newBrandName, setNewBrandName] = useState("")
   const [newBrandDesc, setNewBrandDesc] = useState("")
   const [addingToCategoryId, setAddingToCategoryId] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const { workspace } = useWorkspace()
+
+  useEffect(() => {
+    fetchBrands()
+  }, [workspace])
+
+  const fetchBrands = async () => {
+    setIsLoading(true)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from("brand_settings")
+        .select("data")
+        .eq("workspace", workspace)
+        .single()
+      
+      if (error && error.code !== 'PGRST116') throw error // Ignore not found
+      
+      if (data?.data) {
+        setCategories(data.data)
+      } else {
+        setCategories(DEFAULT_CATEGORIES)
+      }
+    } catch (err: any) {
+      console.error(err)
+      setCategories(DEFAULT_CATEGORIES)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      const supabase = createClient()
+      // Upsert to brand_settings (need a unique constraint on workspace)
+      const { error } = await supabase
+        .from("brand_settings")
+        .upsert({ 
+          workspace: workspace, 
+          data: categories,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "workspace" })
+
+      if (error) throw error
+      toast.success("บันทึกข้อมูลผลิตภัณฑ์สำเร็จ")
+    } catch (err: any) {
+      toast.error("เกิดข้อผิดพลาดในการบันทึก: " + err.message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Logo upload logic
+  const handleBrandLogo = async (catId: string, brandId: string, file: File) => {
+    try {
+      toast.loading("กำลังอัปโหลดโลโก้...", { id: "upload-logo" })
+      const supabase = createClient()
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random()}.${fileExt}`
+      const filePath = `${workspace}/brands/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from("lessons")
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from("lessons")
+        .getPublicUrl(filePath)
+
+      setCategories(prev => prev.map(c => {
+        if (c.id !== catId) return c
+        return {
+          ...c,
+          brands: c.brands.map(b => b.id === brandId ? { ...b, logoPreview: data.publicUrl } : b)
+        }
+      }))
+      toast.success("อัปโหลดสำเร็จ", { id: "upload-logo" })
+    } catch (err: any) {
+      toast.error("อัปโหลดล้มเหลว: " + err.message, { id: "upload-logo" })
+    }
+  }
 
   const toggleCategory = (catId: string) => {
     setCategories(prev => prev.map(c => c.id === catId ? { ...c, isOpen: !c.isOpen } : c))
@@ -109,42 +198,51 @@ export default function BrandManager({ role }: { role: string }) {
     }))
   }
 
-  const handleBrandLogo = (catId: string, brandId: string, file: File) => {
-    const preview = URL.createObjectURL(file)
-    setCategories(prev => prev.map(c => {
-      if (c.id !== catId) return c
-      return {
-        ...c,
-        brands: c.brands.map(b => b.id === brandId ? { ...b, logoFile: file, logoPreview: preview } : b)
-      }
-    }))
-  }
+
 
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Add Category (Admin only) */}
       {role === "admin" && (
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={newCategoryName}
-            onChange={e => setNewCategoryName(e.target.value)}
-            placeholder="ชื่อหมวดหมู่ใหม่ เช่น ทรีทเม้นท์"
-            className="flex-1 px-4 py-2.5 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all"
-            onKeyDown={e => e.key === "Enter" && addCategory()}
-          />
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex items-center gap-2 flex-1">
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={e => setNewCategoryName(e.target.value)}
+              placeholder="ชื่อหมวดหมู่ใหม่ เช่น ทรีทเม้นท์"
+              className="flex-1 px-4 py-2.5 bg-muted/50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+              onKeyDown={e => e.key === "Enter" && addCategory()}
+            />
+            <button 
+              onClick={addCategory}
+              className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-all shrink-0"
+              style={{ background: "var(--gradient-primary)" }}
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+          
           <button 
-            onClick={addCategory}
-            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-all shrink-0"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-all shrink-0 flex items-center justify-center gap-2 disabled:opacity-50"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Plus className="w-4 h-4" />
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            บันทึกการเปลี่ยนแปลง
           </button>
         </div>
       )}
 
-      {/* Categories */}
-      {categories.map(cat => (
+      {isLoading ? (
+        <div className="flex justify-center py-12 text-muted-foreground">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      ) : (
+        <>
+          {/* Categories */}
+          {categories.map(cat => (
         <div key={cat.id} className="glass-card rounded-xl overflow-hidden">
           {/* Category Header */}
           <button
@@ -262,7 +360,9 @@ export default function BrandManager({ role }: { role: string }) {
             </div>
           )}
         </div>
-      ))}
+          ))}
+        </>
+      )}
     </div>
   )
 }

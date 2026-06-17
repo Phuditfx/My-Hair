@@ -1,7 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Trash2, Crown, ImageIcon, X, Save } from "lucide-react"
+import { Plus, Trash2, Crown, ImageIcon, X, Save, Loader2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "../workspace-provider"
+import { toast } from "sonner"
 
 interface Step {
   id: string
@@ -16,9 +19,79 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
   const [target, setTarget] = useState("")
   const [brand, setBrand] = useState("")
   const [isVip, setIsVip] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const { workspace } = useWorkspace()
   const [steps, setSteps] = useState<Step[]>([
     { id: crypto.randomUUID(), title: "", content: "", imageFile: null, imagePreview: null }
   ])
+
+  const handleSave = async () => {
+    if (!level || !target) {
+      toast.error("กรุณาระบุ Base และสีเป้าหมาย")
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const supabase = createClient()
+      
+      // Upload images for steps
+      const uploadedSteps = await Promise.all(steps.map(async (step) => {
+        let imageUrl = null
+        if (step.imageFile) {
+          const fileExt = step.imageFile.name.split('.').pop()
+          const fileName = `${Math.random()}.${fileExt}`
+          const filePath = `${workspace}/colors/${fileName}`
+
+          const { error: uploadError } = await supabase.storage
+            .from("lessons")
+            .upload(filePath, step.imageFile)
+
+          if (uploadError) throw uploadError
+
+          const { data } = supabase.storage
+            .from("lessons")
+            .getPublicUrl(filePath)
+            
+          imageUrl = data.publicUrl
+        }
+
+        return {
+          title: step.title,
+          content: step.content,
+          imagePreview: imageUrl || step.imagePreview
+        }
+      }))
+
+      // Save to Database
+      const { error } = await supabase
+        .from("color_formulas")
+        .insert({
+          base_level: level,
+          target_color: target,
+          brand: brand,
+          steps_data: uploadedSteps,
+          is_vip: isVip,
+          workspace: workspace
+        })
+
+      if (error) throw error
+
+      toast.success("บันทึกสูตรสีสำเร็จ!")
+      
+      // Reset form
+      setLevel("")
+      setTarget("")
+      setBrand("")
+      setIsVip(false)
+      setSteps([{ id: crypto.randomUUID(), title: "", content: "", imageFile: null, imagePreview: null }])
+      
+    } catch (err: any) {
+      toast.error("เกิดข้อผิดพลาด: " + err.message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const addStep = () => {
     setSteps(prev => [...prev, {
@@ -157,10 +230,13 @@ export default function ColorFormulaEditor({ role }: { role: string }) {
           </div>
 
           <button 
-            className="w-full py-2 rounded-xl font-semibold text-white hover:opacity-90 transition-all flex items-center justify-center gap-2 text-sm"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full py-2 rounded-xl font-semibold text-white hover:opacity-90 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Save className="w-4 h-4" /> บันทึกสูตรสี
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {isSaving ? "กำลังบันทึก..." : "บันทึกสูตรสี"}
           </button>
         </div>
       </div>
