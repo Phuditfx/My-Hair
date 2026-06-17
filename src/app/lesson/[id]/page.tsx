@@ -54,7 +54,7 @@ export default async function LessonPage({ params }: { params: { id: string } })
                 {lesson.workspace}
               </span>
             </div>
-            
+
             <div className="flex gap-2 flex-wrap mb-8">
               {lesson.tags?.split(',').map((tag: string, i: number) => {
                 if (!tag.trim()) return null
@@ -65,7 +65,7 @@ export default async function LessonPage({ params }: { params: { id: string } })
                 )
               })}
             </div>
-            
+
             {lesson.cover_image_url && (
               <div className="rounded-2xl overflow-hidden border border-border/50 mb-8 max-h-[400px] w-full flex justify-center bg-muted/20">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -79,18 +79,18 @@ export default async function LessonPage({ params }: { params: { id: string } })
             {lesson.content_data?.map((step: any, index: number) => (
               <div key={index} className="glass-card rounded-2xl p-6 border border-border/50 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1.5 h-full" style={{ background: "var(--gradient-primary)" }}></div>
-                
+
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
                   <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0" style={{ background: "var(--gradient-primary)" }}>
                     {index + 1}
                   </span>
                   {step.title}
                 </h3>
-                
+
                 <div className="prose prose-invert max-w-none mb-4 text-muted-foreground whitespace-pre-wrap leading-relaxed">
                   {step.content}
                 </div>
-                
+
                 {step.imagePreview && (
                   <div className="rounded-xl overflow-hidden mt-4 border border-border/50 max-h-[300px] bg-muted/10 flex justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -99,7 +99,7 @@ export default async function LessonPage({ params }: { params: { id: string } })
                 )}
               </div>
             ))}
-            
+
             {(!lesson.content_data || lesson.content_data.length === 0) && (
               <div className="text-center py-12 text-muted-foreground border-2 border-dashed border-border/50 rounded-2xl">
                 <p>ไม่มีข้อมูลขั้นตอน</p>
