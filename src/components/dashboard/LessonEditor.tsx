@@ -59,7 +59,6 @@ export default function LessonEditor({ onBack }: { onBack?: () => void }) {
         is_vip: isVip,
         content_data: contentData,
         workspace,
-        created_by: user.id
       })
 
       if (error) throw error

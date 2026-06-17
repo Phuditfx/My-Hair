@@ -3,17 +3,31 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ChevronLeft, Sparkles, Calendar } from "lucide-react"
 
-export default async function LessonPage({ params }: { params: { id: string } }) {
+export default async function LessonPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params
   const supabase = await createClient()
 
   const { data: lesson, error } = await supabase
     .from("lessons")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .single()
 
   if (error) {
-    return <div className="p-8 text-center text-red-500">เกิดข้อผิดพลาดในการดึงข้อมูล: {error.message}</div>
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-8">
+        <div className="glass-card rounded-2xl p-8 text-center max-w-md">
+          <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-bold mb-2 text-red-400">เกิดข้อผิดพลาด</h2>
+          <p className="text-muted-foreground mb-6 text-sm">{error.message}</p>
+          <Link href="/" className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white inline-block" style={{ background: "var(--gradient-primary)" }}>
+            กลับหน้าหลัก
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   if (!lesson) {

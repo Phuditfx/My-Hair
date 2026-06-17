@@ -155,16 +155,9 @@ export default function DashboardTabs({ role }: { role: string }) {
 
       <Tabs.Content value="colors" className="outline-none min-h-[500px]">
         <div className="glass-card rounded-2xl p-6 shadow-sm animate-fade-in">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold">คลังสูตรสี</h2>
-              <p className="text-sm text-muted-foreground mt-1">ฐานข้อมูลสูตรสีผมและเทคนิคการผสมสี</p>
-            </div>
-            {role === "admin" && (
-              <button className="px-4 py-2 rounded-xl text-sm font-semibold text-white flex items-center gap-2 hover:opacity-90 transition-all glow-hover" style={{ background: "var(--gradient-primary)" }}>
-                <PlusCircle className="w-4 h-4" /> เพิ่มสูตรสี
-              </button>
-            )}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold">คลังสูตรสี</h2>
+            <p className="text-sm text-muted-foreground mt-1">ฐานข้อมูลสูตรสีผมและเทคนิคการผสมสี</p>
           </div>
 
           <ColorFormulaEditor role={role} />
