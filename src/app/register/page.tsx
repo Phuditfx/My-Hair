@@ -2,11 +2,11 @@
 
 import { useActionState } from "react";
 import { Scissors } from "lucide-react";
-import { login } from "@/app/actions/auth";
+import { signup } from "@/app/actions/auth";
 import Link from "next/link";
 
-export default function LoginPage() {
-  const [state, formAction, isPending] = useActionState(login, null);
+export default function RegisterPage() {
+  const [state, formAction, isPending] = useActionState(signup, null);
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4" style={{ backgroundImage: "var(--gradient-surface)" }}>
@@ -15,8 +15,8 @@ export default function LoginPage() {
           <div className="p-3.5 rounded-xl mb-4 glow-hover" style={{ background: "var(--gradient-primary)" }}>
             <Scissors className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold gradient-text">ยินดีต้อนรับ</h1>
-          <p className="text-muted-foreground text-sm mt-1">เข้าสู่ระบบเพื่อใช้งาน HairMaster Pro</p>
+          <h1 className="text-2xl font-bold gradient-text">สมัครสมาชิก</h1>
+          <p className="text-muted-foreground text-sm mt-1">สร้างบัญชีผู้ใช้ใหม่สำหรับ HairMaster Pro</p>
         </div>
 
         {state?.error && (
@@ -44,6 +44,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50"
               required
+              minLength={6}
             />
           </div>
           
@@ -53,12 +54,12 @@ export default function LoginPage() {
             className="w-full py-2.5 rounded-xl font-semibold text-white transition-all duration-300 hover:opacity-90 hover:shadow-lg disabled:opacity-50 glow-hover"
             style={{ background: "var(--gradient-primary)" }}
           >
-            {isPending ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+            {isPending ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
           </button>
         </form>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          ยังไม่มีบัญชีใช่ไหม? <Link href="/register" className="text-primary hover:underline font-medium">สมัครสมาชิก</Link>
+          มีบัญชีอยู่แล้วใช่ไหม? <Link href="/login" className="text-primary hover:underline font-medium">เข้าสู่ระบบ</Link>
         </p>
       </div>
 
