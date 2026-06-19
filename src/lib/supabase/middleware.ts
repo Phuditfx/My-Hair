@@ -34,9 +34,7 @@ export const updateSession = async (request: NextRequest) => {
 
   // Protect routes logic
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || 
-                      request.nextUrl.pathname.startsWith('/register') || 
-                      request.nextUrl.pathname.startsWith('/forgot-password') || 
-                      request.nextUrl.pathname.startsWith('/update-password')
+                      request.nextUrl.pathname.startsWith('/register')
 
   if (!user && !isAuthRoute) {
     // If user is not logged in and not on auth route, redirect to login

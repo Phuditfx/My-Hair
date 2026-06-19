@@ -27,10 +27,10 @@ export default function RegisterPage() {
 
         <form action={formAction} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">อีเมล</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">อีเมล / ไอดี (ID)</label>
             <input
               name="email"
-              type="email"
+              type="text"
               placeholder="name@example.com"
               className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50"
               required
