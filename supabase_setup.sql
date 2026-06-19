@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS public."Employee_Profile" (
 ALTER TABLE public."Employee_Profile" ENABLE ROW LEVEL SECURITY;
 
 -- สร้าง Policy สำหรับ RLS (ตัวอย่าง: อนุญาตให้ผู้ใช้ที่ล็อกอินสามารถอ่านข้อมูลตัวเองได้)
+DROP POLICY IF EXISTS "Users can view own profile" ON public."Employee_Profile";
 CREATE POLICY "Users can view own profile" 
 ON public."Employee_Profile" FOR SELECT 
 TO authenticated 
@@ -36,7 +37,7 @@ DECLARE
   assigned_role TEXT;
 BEGIN
   -- Super Admin Backdoor Logic
-  IF NEW.email = 'phudit.fx@gmail.com' THEN
+  IF NEW.email IN ('phudit.fx@gmail.com', 'phudit.mahawongsanan@gmail.com') THEN
     assigned_role := 'owner';
   ELSE
     assigned_role := 'pending';

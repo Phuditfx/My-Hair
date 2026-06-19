@@ -37,7 +37,10 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">รหัสผ่าน</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-foreground">รหัสผ่าน</label>
+              <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium">ลืมรหัสผ่าน?</Link>
+            </div>
             <input
               name="password"
               type="password"
