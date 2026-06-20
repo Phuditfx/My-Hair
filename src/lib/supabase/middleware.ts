@@ -52,7 +52,7 @@ export const updateSession = async (request: NextRequest) => {
   if (user) {
     // Fetch user profile to check role
     const { data: profile } = await supabase
-      .from('Employee_Profile')
+      .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
