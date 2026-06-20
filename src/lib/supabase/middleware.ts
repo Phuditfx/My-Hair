@@ -6,9 +6,18 @@ export const updateSession = async (request: NextRequest) => {
     request,
   })
 
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  supabaseUrl = supabaseUrl.trim();
+  if (supabaseUrl && !supabaseUrl.startsWith('http')) {
+    supabaseUrl = 'https://' + supabaseUrl;
+  }
+
+  let anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  anonKey = anonKey.trim();
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    anonKey,
     {
       cookies: {
         getAll() {
