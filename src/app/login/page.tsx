@@ -70,13 +70,13 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="flex flex-col items-center space-y-4 mt-6">
-          <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+        <div className="flex flex-col items-center space-y-4 mt-6 relative z-50">
+          <a href="/forgot-password" className="text-sm text-primary hover:underline font-medium cursor-pointer px-4 py-2">
             ลืมรหัสผ่าน?
-          </Link>
+          </a>
           
           <p className="text-center text-sm text-muted-foreground">
-            ยังไม่มีบัญชีใช่ไหม? <Link href="/register" className="text-primary hover:underline font-medium">สมัครสมาชิก</Link>
+            ยังไม่มีบัญชีใช่ไหม? <a href="/register" className="text-primary hover:underline font-medium cursor-pointer">สมัครสมาชิก</a>
           </p>
         </div>
       </div>
