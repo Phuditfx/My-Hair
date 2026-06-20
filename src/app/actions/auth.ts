@@ -12,10 +12,24 @@ export async function login(prevState: any, formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { data: authData, error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
     return { error: error.message }
+  }
+
+  // ตรวจสอบสถานะรออนุมัติ
+  if (authData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', authData.user.id)
+      .single()
+
+    if (profile?.role === 'pending') {
+      await supabase.auth.signOut()
+      return { error: 'บัญชีของคุณกำลังรอการอนุมัติจาก Admin' }
+    }
   }
 
   revalidatePath('/', 'layout')

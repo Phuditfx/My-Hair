@@ -5,10 +5,12 @@ import { Scissors, Eye, EyeOff } from "lucide-react";
 import { login } from "@/app/actions/auth";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, null);
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4" style={{ backgroundImage: "var(--gradient-surface)" }}>
@@ -71,9 +73,13 @@ export default function LoginPage() {
         </form>
 
         <div className="flex flex-col items-center space-y-4 mt-6 relative z-50">
-          <a href="/forgot-password" className="text-sm text-primary hover:underline font-medium cursor-pointer px-4 py-2">
+          <button 
+            type="button" 
+            onClick={() => router.push('/forgot-password')}
+            className="text-sm text-primary hover:underline font-medium cursor-pointer px-4 py-2"
+          >
             ลืมรหัสผ่าน?
-          </a>
+          </button>
           
           <p className="text-center text-sm text-muted-foreground">
             ยังไม่มีบัญชีใช่ไหม? <a href="/register" className="text-primary hover:underline font-medium cursor-pointer">สมัครสมาชิก</a>
