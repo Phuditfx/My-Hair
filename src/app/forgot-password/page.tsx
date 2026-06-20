@@ -1,13 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Scissors, Eye, EyeOff } from "lucide-react";
-import { login } from "@/app/actions/auth";
+import { resetPasswordImmediate } from "@/app/actions/reset-password";
 import Link from "next/link";
-import { useState } from "react";
 
-export default function LoginPage() {
-  const [state, formAction, isPending] = useActionState(login, null);
+export default function ForgotPasswordPage() {
+  const [state, formAction, isPending] = useActionState(resetPasswordImmediate, null);
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -17,8 +16,10 @@ export default function LoginPage() {
           <div className="p-3.5 rounded-xl mb-4 glow-hover" style={{ background: "var(--gradient-primary)" }}>
             <Scissors className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold gradient-text">ยินดีต้อนรับ</h1>
-          <p className="text-muted-foreground text-sm mt-1">เข้าสู่ระบบเพื่อใช้งาน HairMaster Pro</p>
+          <h1 className="text-2xl font-bold gradient-text">ตั้งรหัสผ่านใหม่</h1>
+          <p className="text-muted-foreground text-sm mt-1 text-center">
+            ระบบทดสอบ: คุณสามารถตั้งรหัสผ่านใหม่และใช้งานได้ทันที
+          </p>
         </div>
 
         {state?.error && (
@@ -29,7 +30,7 @@ export default function LoginPage() {
 
         <form action={formAction} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">อีเมล / ไอดี (ID)</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">อีเมล / ไอดี (ID) ที่ต้องการเปลี่ยน</label>
             <input
               name="email"
               type="text"
@@ -39,16 +40,15 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-sm font-medium text-foreground">รหัสผ่าน</label>
-            </div>
+            <label className="block text-sm font-medium text-foreground mb-1.5">รหัสผ่านใหม่</label>
             <div className="relative">
               <input
-                name="password"
+                name="newPassword"
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="w-full px-4 py-2.5 bg-muted/50 text-foreground border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50 pr-12"
                 required
+                minLength={6}
               />
               <button
                 type="button"
@@ -66,18 +66,12 @@ export default function LoginPage() {
             className="w-full py-2.5 rounded-xl font-semibold text-white transition-all duration-300 hover:opacity-90 hover:shadow-lg disabled:opacity-50 glow-hover"
             style={{ background: "var(--gradient-primary)" }}
           >
-            {isPending ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+            {isPending ? "กำลังเปลี่ยนรหัสผ่าน..." : "เปลี่ยนรหัสผ่าน"}
           </button>
-          
-          <div className="text-center mt-4">
-            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-              ลืมรหัสผ่าน?
-            </Link>
-          </div>
         </form>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          ยังไม่มีบัญชีใช่ไหม? <Link href="/register" className="text-primary hover:underline font-medium">สมัครสมาชิก</Link>
+          <Link href="/login" className="text-primary hover:underline font-medium">กลับไปหน้าเข้าสู่ระบบ</Link>
         </p>
       </div>
 

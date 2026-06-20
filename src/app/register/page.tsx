@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
-import { Scissors } from "lucide-react";
+import { Scissors, Eye, EyeOff } from "lucide-react";
 import { signup } from "@/app/actions/auth";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function RegisterPage() {
   const [state, formAction, isPending] = useActionState(signup, null);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4" style={{ backgroundImage: "var(--gradient-surface)" }}>
@@ -32,20 +34,29 @@ export default function RegisterPage() {
               name="email"
               type="text"
               placeholder="name@example.com"
-              className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50"
+              className="w-full px-4 py-2.5 bg-muted/50 text-foreground border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50"
               required
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">รหัสผ่าน</label>
-            <input
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50"
-              required
-              minLength={6}
-            />
+            <div className="relative">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="w-full px-4 py-2.5 bg-muted/50 text-foreground border border-border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all duration-300 placeholder:text-muted-foreground/50 pr-12"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           
           <button
