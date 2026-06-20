@@ -68,17 +68,17 @@ export default function LoginPage() {
           >
             {isPending ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
           </button>
-          
-          <div className="text-center mt-4">
-            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-              ลืมรหัสผ่าน?
-            </Link>
-          </div>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          ยังไม่มีบัญชีใช่ไหม? <Link href="/register" className="text-primary hover:underline font-medium">สมัครสมาชิก</Link>
-        </p>
+        <div className="flex flex-col items-center space-y-4 mt-6">
+          <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+            ลืมรหัสผ่าน?
+          </Link>
+          
+          <p className="text-center text-sm text-muted-foreground">
+            ยังไม่มีบัญชีใช่ไหม? <Link href="/register" className="text-primary hover:underline font-medium">สมัครสมาชิก</Link>
+          </p>
+        </div>
       </div>
 
       <p className="text-muted-foreground/50 text-xs mt-8">
